@@ -3,15 +3,22 @@ import { verifyScreenshot } from "../../utils/screenshotHandler";
 import { AddButton } from "./addButton";
 
 test.describe("AddButton", () => {
-    test("should render correctly", async ({ mount }) => {
-        const component = await mount(<AddButton primary>Add</AddButton>);
-        await verifyScreenshot(component, "AddButton");
+    test("should render with primary", async ({ mount }) => {
+        const text = "AddButton-primary";
+        const component = await mount(<AddButton primary>{text}</AddButton>);
+        await verifyScreenshot(component, text);
+    });
+
+    test("should render without primary", async ({ mount }) => {
+        const text = "AddButton-without-primary";
+        const component = await mount(<AddButton>{text}</AddButton>);
+        await verifyScreenshot(component, text);
     });
 
     test("AddButton hover state", async ({ mount }) => {
-        const component = await mount(<AddButton primary>Add</AddButton>);
-
+        const text = "AddButton-hover";
+        const component = await mount(<AddButton primary>{text}</AddButton>);
         await component.hover();
-        await verifyScreenshot(component, "AddButton-hover");
+        await verifyScreenshot(component, text);
     });
 });
