@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNodes } from "../../providers/nodeContextProvider";
+import { AddButton } from "../addButton/addButton";
+import styled from "styled-components";
 
 const NodeForm: React.FC = () => {
     const { addNode } = useNodes();
@@ -23,7 +25,7 @@ const NodeForm: React.FC = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <StyledForm onSubmit={handleSubmit}>
             <input
                 type="text"
                 value={name}
@@ -57,9 +59,20 @@ const NodeForm: React.FC = () => {
                     placeholder="Programming Language"
                 />
             )}
-            <button type="submit">Add Node</button>
-        </form>
+            <AddButton primary type="submit">
+                Add Node
+            </AddButton>
+        </StyledForm>
     );
 };
+
+const StyledForm = styled.form`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+`;
 
 export default NodeForm;
