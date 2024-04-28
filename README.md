@@ -34,7 +34,7 @@ yarn dev
 
 ### Run tests
 
-At the moment Linux or WSL is required to run visual resgression tests due to a descepancy between the way post processing of photos is being done on different OS.
+At the moment Linux or WSL is required to run visual resgression tests due to a discrepancy between the way post processing of photos is being done on different OS.
 
 Run the tests with:
 
