@@ -73,7 +73,7 @@ jobs:
 
             - name: Run tests
               # 'HOME=root' is a workaround for firefox running in docker
-              run: HOME=/root yarn test:playwright --project=${{ matrix.browser }}
+              run: HOME=/root yarn test-ct --project=${{ matrix.browser }}
 
             - name: Save test-results as artifact
               if: ${{ failure() }}
