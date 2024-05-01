@@ -1,0 +1,83 @@
+name: CI
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
+
+on: push
+
+jobs:
+    prime-cache:
+        name: "Prime cache"
+        runs-on: ubuntu-20.04
+        steps:
+            - name: checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "20"
+
+            - name: Install Yarn
+              run: npm install -g yarn
+
+            - name: Look for node_modules cache
+              uses: actions/cache@v3
+              id: cache
+              with:
+                  path: node_modules
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+
+            - name: Install dependencies
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: yarn --frozen-lockfile
+
+    playwright-test:
+        name: "Playwright test"
+        needs: prime-cache
+        runs-on: ubuntu-20.04
+        container:
+            image: mcr.microsoft.com/playwright:v1.24.0-focal
+            options: --user root
+        strategy:
+            fail-fast: false
+            matrix:
+                browser: [chromium, firefox, webkit, iphone13]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "16"
+
+            - name: Install Yarn
+              run: npm install -g yarn
+
+            - name: Install Zstd (required for caching)
+              run: apt-get update && apt-get install -y zstd
+
+            - name: Fetch node_modules cache
+              uses: actions/cache@v3
+              id: cache
+              with:
+                  path: node_modules
+                  fail-on-cache-miss: true
+                  key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+
+            - name: Verify playwright dependencies
+              run: yarn playwright install --with-deps
+
+            - name: Run tests
+              # 'HOME=root' is a workaround for firefox running in docker
+              run: HOME=/root yarn test-ct --project=${{ matrix.browser }}
+
+            - name: Save test-results as artifact
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v3
+              with:
+                  name: test-results
+                  path: test-results/**/*
