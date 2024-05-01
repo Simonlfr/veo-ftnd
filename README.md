@@ -1,4 +1,4 @@
-# NestJS Application
+# React Typescript frontend
 
 This is a simple front end build with React Vite and Typescript.
 
